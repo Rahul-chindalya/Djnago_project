@@ -11,7 +11,14 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 # loginSerializer to Check authenticate user authorise
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password =serializers.CharField(write_only=True)
     
+
+class UserSerializer(serializers.Serializer):
+    username = serializers.CharField(source='user.username')
+    email = serializers.EmailField(source='user.email')
+    class Meta:
+        model = Profile
+        fields = ['id','username','email','phone_no','role','address']
