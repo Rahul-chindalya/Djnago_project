@@ -7,9 +7,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User,on_delete=models.CASCADE)
 
     role_choice = [
-        ('admin','amdin'),
-        ('inspector','inspector'),
-        ('engineer','engineer'),
+        ('ADMIN','admin'),
+        ('INSPECTOR','inspector'),
+        ('ENGINEER','engineer'),
     ]
     phone_no = models.BigIntegerField(blank=True,null=True)
     role = models.CharField(max_length=50,choices=role_choice)
