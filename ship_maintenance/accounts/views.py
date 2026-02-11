@@ -1,14 +1,15 @@
 from django.shortcuts import render
+from django.contrib.auth import login
+from django.contrib.auth.models import User
 
 from rest_framework import status
-from rest_framework.decorators import api_view,permission_classes
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser
-from rest_framework.authtoken.models  import Token
 
-from .serializer import ProfileSerializer,RegisterUserSerializer,LoginSerializer
+from .permissions import IsSuperUser
+from .serializer import ProfileSerializer, RegisterUserSerializer, LoginSerializer
 from .models import Profile
-from django.contrib.auth.models import User
+
 
 @api_view(['POST'])
 def user_register(request):
@@ -33,53 +34,42 @@ def user_login(request):
         return Response({'error':"ENTER CORRECT EMAIL AND PASSWORD"},status=status.HTTP_400_BAD_REQUEST)
     
     user = serializer.validated_data['user']
-    token, _ = Token.objects.get_or_create(user=user)
+    
+    login(request,user)  # creates session
+    
     profile = Profile.objects.filter(user=user).first()
     return Response({
-        "token": token.key,
         "user_id" :  user.id,
         "email":user.email,
         "role":profile.role if profile else None,
     },status=status.HTTP_200_OK)
 
 
-def is_admin(user):
-    if not user.is_authenticated:
-        return False
-    profile = Profile.objects.filter(user=user).first()
-    if not profile:
-        return False
+# def is_admin(user):
+#     if not user.is_authenticated:
+#         return False
+#     profile = Profile.objects.filter(user=user).first()
+#     if not profile:
+#         return False
 
-    return profile.role == 'admin'
+#     return profile.role == 'ADMIN'
     
 @api_view(['GET'])
+@permission_classes([IsSuperUser])
 def users_list(request):
 
-    # check login
-    if not request.user.is_authenticated:
-        return Response(
-            {"error": "Login required"},
-            status=status.HTTP_401_UNAUTHORIZED
-        )
-
     # check admin role
-    if not is_admin(request.user):
-        return Response(
-            {"error": "Only admin can view users"},
-            status=status.HTTP_403_FORBIDDEN
-        )
 
-    users = User.objects.all()
-    result = []
+    profiles = Profile.objects.select_related('user').all()
+    result = {}
 
-    for user in users:
-        profile = Profile.objects.filter(user=user).first()
+    for profile in profiles:
 
         result.append({
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "role": profile.role if profile else None
+            "id": profile.user.id,
+            "username": profile.user.username,
+            "email": profile.user.email,
+            "role": profile.role 
         })
 
     return Response(result, status=status.HTTP_200_OK)
@@ -87,16 +77,15 @@ def users_list(request):
 
 
 @api_view(['GET'])
+@permission_classes([IsSuperUser])
 def user_detail(request,id):
-    if not is_admin(request.user):
-        return Response({"error": "Only ADMIN can view users"}, status=status.HTTP_403_FORBIDDEN)
-    
+
     try:
         user = User.objects.get(id=id)
-    except:
+    except User.DoesNotExist:
         return Response({"error":'USER DOES NOTEXISTS'},status=status.HTTP_404_NOT_FOUND)
 
-    profile = Profile.objects.filter(user=user)
+    profile = Profile.objects.filter(user=user).first()
     return Response({
         "id": user.id,
         "username": user.username, 
@@ -107,9 +96,8 @@ def user_detail(request,id):
     },status= status.HTTP_200_OK)
 
 @api_view(['PUT'])
+@permission_classes([IsSuperUser])
 def user_update(request,id):
-    if not is_admin(request.user):
-        return Response({"error": "Only ADMIN can update users"}, status=status.HTTP_403_FORBIDDEN)
 
     try:
         user = User.objects.get(id=id)
@@ -130,14 +118,20 @@ def user_update(request,id):
     return Response({"message": "User updated successfully"}, status=status.HTTP_200_OK)
 
 @api_view(['DELETE'])
+@permission_classes([IsSuperUser])
 def user_delete(request,id):
-    if not is_admin(request.user):
-        return Response({'ERROR':"ONLY ADMIN CAN REMOVE"},status=status.HTTP_401_UNAUTHORIZED)
     try:
         user = User.objects .get(id=id)
-    except:
+    except User.DoesNotExist:
         return Response({'ERROR':"User not found"},status=status.HTTP_404_NOT_FOUND)
     
     user.delete()
 
     return Response({'message':'DELETED USER SUCCESSFULLY'},status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def test_auth(request):
+    return Response({
+        "user": str(request.user),
+        "authenticated": request.user.is_authenticated
+    })
