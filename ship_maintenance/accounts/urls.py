@@ -9,5 +9,4 @@ urlpatterns = [
     path('users/<int:id>/detail/',views.user_detail),
     path('users/<int:id>/update/',views.user_update),
     path('users/<int:id>/delete/',views.user_delete),
-    path('test/',views.test_auth),
 ]

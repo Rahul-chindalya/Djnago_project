@@ -135,10 +135,3 @@ def user_delete(request,id):
         "phone_no":Profile.phone_no if Profile else None,
         "address":Profile.address if Profile else None,
     }},status=status.HTTP_200_OK)
-
-@api_view(['GET'])
-def test_auth(request):
-    return Response({
-        "user": str(request.user),
-        "authenticated": request.user.is_authenticated
-    })

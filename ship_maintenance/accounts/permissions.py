@@ -4,10 +4,7 @@ from rest_framework.permissions import BasePermission
 # Intended behavior:
 # - Only ADMIN / SUPERUSER can access protected endpoints
 # - Normal users should receive 403 Forbidden
-#
-# Current status:
-# - Permission logic implemented
-# - Not functioning correctly (needs debugging)
+
 
 
 class IsSuperUser(BasePermission):
