@@ -55,7 +55,6 @@ def user_login(request):
 @permission_classes([IsSuperUser])
 def users_list(request):
 
-    # check admin role
 
     profiles = Profile.objects.select_related('user').all()
     result = []

@@ -1,7 +1,7 @@
-from rest_framework.serializers import serializer
+from rest_framework import serializers
 from .models import Ship
 
-class ShipSerializer(serializer.ModelSerializer):
+class ShipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ship
         fields = '__all__'

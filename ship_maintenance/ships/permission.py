@@ -11,4 +11,4 @@ class ISAdminOrEngineer(BasePermission):
         if not profile:
             return False
         
-        return profile.role in ['Admin','Engineer']
+        return profile.role in ['ADMIN','ENGINEER']
