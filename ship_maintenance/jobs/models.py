@@ -1,6 +1,7 @@
 from django.db import models
 from ships.models import Ship
 from accounts.models import User
+from django.utils import timezone
 
 # Create your models here.
 class MaintainenceJobs(models.Model):
@@ -20,6 +21,7 @@ class MaintainenceJobs(models.Model):
     status = models.CharField(max_length=20,choices=status_choice)
     assigned_engineer = models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank=True)
 
+    scheduled_date = models.DateField(default=timezone.now)
     created_at = models.DateTimeField(auto_now_add=True,)
 
     def __str__(self):
