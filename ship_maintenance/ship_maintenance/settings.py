@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'ships',
     'components',
     'jobs',
+    'calendar_app',
 ]
 
 # REST_FRAMEWORK = {
