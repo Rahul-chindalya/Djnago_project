@@ -6,6 +6,9 @@ Python 3.13.5
 django-admin --version
 5.0
 
+for jwt
+python -m pip install djangorestframework-simplejwt
+
 
 SHIP MANAGEMENT PROJECT 
 
