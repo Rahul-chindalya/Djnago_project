@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'jobs',
     'calendar_app',
     'notifications',
+    'dashboard',
 ]
 
 # REST_FRAMEWORK = {
