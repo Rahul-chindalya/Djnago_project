@@ -28,4 +28,5 @@ urlpatterns = [
     path('ship/',include('jobs.urls')),
     path('ship/',include('calendar_app.urls')),
     path('ship/',include('notifications.urls')),
+    path('ship/',include('dashboard.urls')),
 ]
